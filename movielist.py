@@ -1,3 +1,5 @@
+from urllib.request import urlopen
+import requests
 INF = 1000000
 movielist = "movielist.txt"
 
@@ -54,6 +56,39 @@ def add(movie, addition = 1):
     movie = movie.split()
     for i in range(len(movie)):
         movie[i] = movie[i].lower().capitalize()
+    movie = "+".join(movie)
+    webp = requests.get("https://www.imdb.com/find?q=" + movie + "&ref_=nv_sr_sm").text
+    print("https://www.imdb.com/find?q=" + movie + "&ref_=nv_sr_sm")
+    startlist = "<table class=\"findList\">"
+    lenlist = len(startlist)
+    for i in range(len(webp)):
+        if webp[i:(i+lenlist)] == startlist:
+            lenlist += i
+            break
+    if lenlist == len(startlist):
+        return
+    secondone = "<a href=\"/title"
+    lensecond = len(secondone)
+    ok = 0
+    for i in range(lenlist,len(webp)):
+        #print(webp[i], end='')
+        if webp[i:(i+lensecond)] == secondone and ok:
+            lensecond += i
+            break
+        elif webp[i:(i+lensecond)] == secondone:
+            ok = 1
+    startsymbol = '>'
+    endsymbol = '<'
+    startnumber = 0
+    endnumber = 0
+    for i in range(lensecond,len(webp)):
+        if webp[i] == startsymbol:
+            startnumber = i + 1
+        elif webp[i] == endsymbol:
+            endnumber = i
+            break
+    movie = webp[startnumber:endnumber]
+    movie = movie.split()
     movie = "_".join(movie)
     addmovie(movie, addition)
 
