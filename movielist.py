@@ -1,3 +1,5 @@
+from urllib.request import urlopen
+import requests
 INF = 1000000
 movielist = "movielist.txt"
 
@@ -54,6 +56,53 @@ def add(movie, addition = 1):
     movie = movie.split()
     for i in range(len(movie)):
         movie[i] = movie[i].lower().capitalize()
+    movie = "+".join(movie)
+    webp = requests.get("https://www.imdb.com/find?q=" + movie).text
+    startlist = "<table class=\"findList\">"
+    lenlist = len(startlist)
+    for i in range(len(webp)):
+        if webp[i:(i+lenlist)] == startlist:
+            lenlist += i
+            break
+    if lenlist == len(startlist):
+        return
+    secondone = "<a href=\"/title/"
+    lensecond = len(secondone)
+
+    for i in range(lenlist,len(webp)):
+        if webp[i:(i+lensecond)] == secondone:
+            lensecond += i
+            break
+    endsymbol = '/'
+    endnumber = lensecond
+    for i in range(lensecond,len(webp)):
+        if webp[i] == endsymbol:
+            endnumber = i + 1
+            break
+    title = webp[lensecond:endnumber]
+
+    webp = requests.get("https://www.imdb.com/title/" + title).text
+
+    lastone = "<meta property='og:title' content=\""
+    lenlastone = len(lastone)
+
+    for i in range(len(webp)):
+        if webp[i:(i+lenlastone)] == lastone:
+            lenlastone += i
+            break
+
+    endsymbol = '('
+    endsecond = lenlastone
+    for i in range(lenlastone,len(webp)):
+        if webp[i] == endsymbol:
+            endsecond = i-1
+            break
+
+    movie = webp[lenlastone:endsecond]
+
+    print(movie)
+
+    movie = movie.split()
     movie = "_".join(movie)
     addmovie(movie, addition)
 
@@ -74,7 +123,7 @@ def writenotes(notes):
     f = open(movielist, "r")
     lines = f.readlines()
     f.close()
-    lines = topmovies(len(lines), 0)
+    lines = topmovies(len(lines), 1)
     updatelines(lines, notes)
 
 def erase():
