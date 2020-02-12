@@ -57,8 +57,7 @@ def add(movie, addition = 1):
     for i in range(len(movie)):
         movie[i] = movie[i].lower().capitalize()
     movie = "+".join(movie)
-    webp = requests.get("https://www.imdb.com/find?q=" + movie + "&ref_=nv_sr_sm").text
-    print("https://www.imdb.com/find?q=" + movie + "&ref_=nv_sr_sm")
+    webp = requests.get("https://www.imdb.com/find?q=" + movie).text
     startlist = "<table class=\"findList\">"
     lenlist = len(startlist)
     for i in range(len(webp)):
@@ -67,27 +66,42 @@ def add(movie, addition = 1):
             break
     if lenlist == len(startlist):
         return
-    secondone = "<a href=\"/title"
+    secondone = "<a href=\"/title/"
     lensecond = len(secondone)
-    ok = 0
+
     for i in range(lenlist,len(webp)):
-        #print(webp[i], end='')
-        if webp[i:(i+lensecond)] == secondone and ok:
+        if webp[i:(i+lensecond)] == secondone:
             lensecond += i
             break
-        elif webp[i:(i+lensecond)] == secondone:
-            ok = 1
-    startsymbol = '>'
-    endsymbol = '<'
-    startnumber = 0
-    endnumber = 0
+    endsymbol = '/'
+    endnumber = lensecond
     for i in range(lensecond,len(webp)):
-        if webp[i] == startsymbol:
-            startnumber = i + 1
-        elif webp[i] == endsymbol:
-            endnumber = i
+        if webp[i] == endsymbol:
+            endnumber = i + 1
             break
-    movie = webp[startnumber:endnumber]
+    title = webp[lensecond:endnumber]
+
+    webp = requests.get("https://www.imdb.com/title/" + title).text
+
+    lastone = "<meta property='og:title' content=\""
+    lenlastone = len(lastone)
+
+    for i in range(len(webp)):
+        if webp[i:(i+lenlastone)] == lastone:
+            lenlastone += i
+            break
+
+    endsymbol = '('
+    endsecond = lenlastone
+    for i in range(lenlastone,len(webp)):
+        if webp[i] == endsymbol:
+            endsecond = i-1
+            break
+
+    movie = webp[lenlastone:endsecond]
+
+    print(movie)
+
     movie = movie.split()
     movie = "_".join(movie)
     addmovie(movie, addition)
@@ -109,7 +123,7 @@ def writenotes(notes):
     f = open(movielist, "r")
     lines = f.readlines()
     f.close()
-    lines = topmovies(len(lines), 0)
+    lines = topmovies(len(lines), 1)
     updatelines(lines, notes)
 
 def erase():
