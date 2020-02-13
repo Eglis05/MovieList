@@ -58,13 +58,10 @@ def add(movie, addition = 1):
         movie[i] = movie[i].lower().capitalize()
     movie = "+".join(movie)
     webp = requests.get("https://www.imdb.com/find?q=" + movie).text
+
     startlist = "<table class=\"findList\">"
-    lenlist = len(startlist)
-    for i in range(len(webp)):
-        if webp[i:(i+lenlist)] == startlist:
-            lenlist += i
-            break
-    if lenlist == len(startlist):
+    lenlist = webp.find(startlist, 91000, len(webp)-1) + len(startlist)
+    if lenlist == len(startlist) - 1:
         return
     secondone = "<a href=\"/title/"
     lensecond = len(secondone)
@@ -123,7 +120,7 @@ def writenotes(notes):
     f = open(movielist, "r")
     lines = f.readlines()
     f.close()
-    lines = topmovies(len(lines), 1)
+    lines = topmovies(len(lines), 0)
     updatelines(lines, notes)
 
 def erase():
