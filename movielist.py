@@ -56,6 +56,7 @@ def add(movie, addition = 1):
     movie = movie.split()
     for i in range(len(movie)):
         movie[i] = movie[i].lower().capitalize()
+    movie2 = " ".join(movie)
     movie = "+".join(movie)
     webp = requests.get("https://www.imdb.com/find?q=" + movie).text
 
@@ -80,6 +81,7 @@ def add(movie, addition = 1):
 
     webp = requests.get("https://www.imdb.com/title/" + title).text
 
+    
     lastone = "<meta property='og:title' content=\""
     lenlastone = len(lastone)
 
@@ -94,10 +96,18 @@ def add(movie, addition = 1):
         if webp[i] == endsymbol:
             endsecond = i-1
             break
+    
+    quotes = "&quot;"
+
+    x = webp.find(quotes, lenlastone, endsecond)
+    if (x != -1):
+        lenlastone = webp.find(quotes, x + len(quotes), endsecond) + len(quotes) + 1
 
     movie = webp[lenlastone:endsecond]
-
-    print(movie)
+    if movie.lower() != movie2.lower():
+        print("Not the same: " + movie)
+    #else:
+        #print("The same: " + movie)
 
     movie = movie.split()
     movie = "_".join(movie)
