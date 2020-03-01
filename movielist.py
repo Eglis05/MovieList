@@ -61,8 +61,9 @@ def add(movie, addition = 1):
     webp = requests.get("https://www.imdb.com/find?q=" + movie).text
 
     startlist = "<table class=\"findList\">"
-    lenlist = webp.find(startlist, 91000, len(webp)-1) + len(startlist)
+    lenlist = webp.find(startlist, 80000, len(webp)-1) + len(startlist)
     if lenlist == len(startlist) - 1:
+        print("SOMETHING IS WRONG")
         return
     secondone = "<a href=\"/title/"
     lensecond = len(secondone)
@@ -78,7 +79,6 @@ def add(movie, addition = 1):
             endnumber = i + 1
             break
     title = webp[lensecond:endnumber]
-
     webp = requests.get("https://www.imdb.com/title/" + title).text
 
     
@@ -105,9 +105,9 @@ def add(movie, addition = 1):
 
     movie = webp[lenlastone:endsecond]
     if movie.lower() != movie2.lower():
-        print("Not the same: " + movie)
-    #else:
-        #print("The same: " + movie)
+        print("Not the same: " + movie2 + " vs " + movie)
+    # else:
+    #     print("The same: " + movie)
 
     movie = movie.split()
     movie = "_".join(movie)
