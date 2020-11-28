@@ -36,10 +36,9 @@ class Ui(QtWidgets.QMainWindow):
         # browse button for file
         self.btnBrowsein = self.findChild(QtWidgets.QPushButton, 'btnBrowseIn')
         self.btnBrowsein.clicked.connect(partial(self.fileSelector, "in"))
-        self.btnBrowsein.hide()
+
         self.btnBrowseout = self.findChild(QtWidgets.QPushButton, 'btnBrowseout')
         self.btnBrowseout.clicked.connect(partial(self.fileSelector, "out"))
-        self.btnBrowseout.hide()
 
         # start stop button
         self.isRunning = False
@@ -79,6 +78,11 @@ class Ui(QtWidgets.QMainWindow):
         self.points = self.findChild(QtWidgets.QLineEdit, 'Points')
         self.points.setValidator(self.onlyInt)
 
+        # the nr of top movies to add show should only be int
+        self.onlyInt = QIntValidator()
+        self.top = self.findChild(QtWidgets.QLineEdit, 'Top')
+        self.top.setValidator(self.onlyInt)
+
         #calling the function for creating the first instance
         self.inputTypeSelector(self.inputType.currentText())
 
@@ -96,21 +100,31 @@ class Ui(QtWidgets.QMainWindow):
         self.inputPath.setEnabled(enable)
         self.outputPath.setEnabled(enable)
         self.configId.setEnabled(enable)
+    
+    def printing(self, string_to_print):
+        self.errorLbl.setText(string_to_print)
+        self.errorLbl.setStyleSheet('color: green')
+        self.errorLbl.show()
 
     def scaleBtnPress(self):
-        self.algorithms.scale()
+        self.algorithms.scale(self.outputPath.text())
+        self.printing("Finish Scaling the file!")
 
     def topBtnPress(self):
-        print("Top Button is Work in Progress!")
+        top_movies = self.algorithms.topmovies(int(self.top.text()), self.outputPath.text())
+        print(top_movies) #print them in there so it is printed better
+        self.printing("Finish Showing top movies!")
 
     def removeBtnPress(self):
-        self.algorithms.remove(self.nameadd.text())
+        self.algorithms.remove(self.nameadd.text(), self.outputPath.text())
+        self.printing("Finish Removing the movie!")
     
     def addBtnPress(self):
-        self.algorithms.add(self.nameadd.text(), self.points.text())
+        self.algorithms.add(self.nameadd.text(), self.outputPath.text(), int(self.points.text()))
+        self.printing("Finish Adding the movie!")
 
     def processtest(self):
-        print("Processing is Work in Progress!")
+        self.algorithms.readnotes(self.inputPath.text(), self.outputPath.text())
 
     def startBtnPress(self):
         if not self.isRunning:
@@ -124,9 +138,7 @@ class Ui(QtWidgets.QMainWindow):
             self.enableDisableUIEle(True)
             self.isRunning = False
             self.startBtn.setText("Start")
-            self.errorLbl.setText("Finish processing the file")
-            self.errorLbl.setStyleSheet('color: green')
-            self.errorLbl.show()
+            self.printing("Finish processing the file")
 
         else:
             self.enableDisableUIEle(True)

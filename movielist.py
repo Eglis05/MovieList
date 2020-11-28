@@ -1,28 +1,26 @@
 from urllib.request import urlopen
 import requests
 INF = 10000000
-movielist = "movielist.txt"
 
 class MovieList():
     def __init__(self):
         print("Creating a MovieList Instance")
 
-    def addnewmovie(self, movie, addition):
+    def addnewmovie(self, movie, addition, movielist):
         f = open(movielist, "a")
         f.write(movie + " " + str(addition) + "\n")
         f.close()
         self.updatelist(movielist)
 
-    def updatelines(self, lines, wantedfile):
-        f = open(wantedfile, "w")
+    def updatelines(self, lines, movielist):
+        f = open(movielist, "w")
         for line in lines:
             f.write(line + "\n")
         f.close()
-        if wantedfile == movielist:
-            self.updatelist(wantedfile)
+        self.updatelist(movielist)
 
-    def updatelist(self, wantedfile):
-        f = open(wantedfile, "r")
+    def updatelist(self, movielist):
+        f = open(movielist, "r")
         lines = f.readlines()
         before = INF
         OK = 0
@@ -37,9 +35,9 @@ class MovieList():
                 lines[i] = lines[i][0] + " " + lines[i][1]
         f.close()
         if OK:
-            self.updatelines(lines, wantedfile)
+            self.updatelines(lines, movielist)
 
-    def addmovie(self, movie, addition = 1):
+    def addmovie(self, movie, movielist, addition):
         f = open(movielist, "r")
         lines = f.readlines()
         OK = 1
@@ -52,11 +50,11 @@ class MovieList():
             OK = 0
         f.close()
         if OK:
-            self.addnewmovie(movie, addition)
+            self.addnewmovie(movie, addition, movielist)
         else:
             self.updatelines(lines, movielist)
 
-    def add(self, movie, addition = 1):
+    def add(self, movie, movielist, addition):
         movie = movie.split()
         for i in range(len(movie)):
             movie[i] = movie[i].lower().capitalize()
@@ -115,9 +113,9 @@ class MovieList():
 
         movie = movie.split()
         movie = "_".join(movie)
-        self.addmovie(movie, addition)
+        self.addmovie(movie, movielist, addition)
 
-    def readnotes(self, notes):
+    def readnotes(self, notes, movielist):
         f = open(notes, "r")
         lines = f.readlines()
         for i in range(len(lines)):
@@ -125,38 +123,27 @@ class MovieList():
             movie = lines[i][0:len(lines[i])-1]
             movie = " ".join(movie)
             try:
-                self.add(movie, int(lines[i][len(lines[i])-1]))
+                self.add(movie, movielist, int(lines[i][len(lines[i])-1]))
             except ValueError:
-                self.add(" ".join(lines[i]), 1)
+                self.add(" ".join(lines[i]), movielist, 1)
         f.close()
 
-    def writenotes(self, notes):
-        f = open(movielist, "r")
-        lines = f.readlines()
-        f.close()
-        lines = self.topmovies(len(lines), 0)
-        self.updatelines(lines, notes)
-
-    def erase(self):
-        f = open(movielist, "w")
-        f.close()
-
-    def scale(self):
+    def scale(self, movielist):
         f = open(movielist, "r")
         lines = f.readlines()
         for i in range(len(lines)):
             lines[i] = lines[i].split()
-            self.addmovie(lines[i][0], len(lines)-i-int(lines[i][1]))
+            self.addmovie(lines[i][0], movielist, len(lines)-i-int(lines[i][1]))
         f.close()
             
-    def notline(self, lines, j):
+    def notline(self, lines, j, movielist):
         f = open(movielist, "w")
         for i in range(len(lines)):
             if i != j:
                 f.write(lines[i] + "\n")
         f.close()
 
-    def removemovie(self, movie):
+    def removemovie(self, movie, movielist):
         f = open(movielist, "r")
         lines = f.readlines()
         j = -1
@@ -170,17 +157,17 @@ class MovieList():
             lines[i] = " ".join(lines[i])
             j = i
         if j != -1:
-            self.notline(lines, j)
+            self.notline(lines, j, movielist)
         f.close()
 
-    def remove(self, movie):
+    def remove(self, movie, movielist):
         movie = movie.split()
         for i in range(len(movie)):
             movie[i] = movie[i].lower().capitalize()
         movie = "_".join(movie)
-        self.removemovie(movie)
+        self.removemovie(movie, movielist)
 
-    def topmovies(self, x, ok = 1):
+    def topmovies(self, x, movielist, ok = 1):
         f = open(movielist, "r")
         lines = f.readlines()
         movies = []
@@ -196,7 +183,7 @@ class MovieList():
         f.close()
         return movies
 
-    def searchmovie(self, movie):
+    def searchmovie(self, movie, movielist):
         f = open(movielist, "r")
         lines = f.readlines()
         movies = []
@@ -212,9 +199,9 @@ class MovieList():
         f.close()
         return movies
 
-    def search(self, movie):
+    def search(self, movie, movielist):
         movie = movie.split()
         for i in range(len(movie)):
             movie[i] = movie[i].lower()
         movie = "_".join(movie)
-        return self.searchmovie(movie)
+        return self.searchmovie(movie, movielist)
