@@ -82,6 +82,7 @@ class Ui(QtWidgets.QMainWindow):
         self.onlyInt = QIntValidator()
         self.top = self.findChild(QtWidgets.QLineEdit, 'Top')
         self.top.setValidator(self.onlyInt)
+        self.top.setText("0")
 
         #calling the function for creating the first instance
         self.inputTypeSelector(self.inputType.currentText())
@@ -175,8 +176,9 @@ class Ui(QtWidgets.QMainWindow):
             self.generateConfigFile()
             with open(self.savedConfigFile) as json_file:
                 config_data = json.load(json_file)
-                self.inputPath.setText(config_data["input_path"])
-                self.outputPath.setText(config_data["output_path"])
+                self.inputPath.setText(config_data["txt_path"])
+                self.outputPath.setText(config_data["list_path"])
+                self.top.setText(config_data["top"])
 
     def generateConfigFile(self):
         if self.configId.text() == "":
@@ -189,7 +191,7 @@ class Ui(QtWidgets.QMainWindow):
 
     def saveAreasMarked(self):
         self.generateConfigFile()
-        config_data = {"input_path": self.inputPath.text(), "output_path": self.outputPath.text()}
+        config_data = {"txt_path": self.inputPath.text(), "list_path": self.outputPath.text(), "top": self.top.text()}
         with open(self.savedConfigFile, 'w') as outfile:
             json.dump(config_data, outfile)
         if self.configId.text() not in [self.inputConf.itemText(i) for i in range(self.inputConf.count())]:
@@ -222,3 +224,4 @@ class Ui(QtWidgets.QMainWindow):
 app = QtWidgets.QApplication(sys.argv)  # Create an instance of QtWidgets.QApplication
 window = Ui()  # Create an instance of our class
 app.exec_()  # Start the application
+window.saveAreasMarked()
