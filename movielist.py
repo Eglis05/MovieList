@@ -1,6 +1,4 @@
-from urllib.request import urlopen
 import requests
-INF = 10000000
 
 class MovieList():
     def __init__(self):
@@ -15,27 +13,17 @@ class MovieList():
     def updatelines(self, lines, movielist):
         f = open(movielist, "w")
         for line in lines:
-            f.write(line + "\n")
+            f.write(line)
+            if line[-1] != "\n":
+                f.write("\n")
         f.close()
-        self.updatelist(movielist)
 
     def updatelist(self, movielist):
         f = open(movielist, "r")
         lines = f.readlines()
-        before = INF
-        OK = 0
-        for i in range(len(lines)):
-            lines[i] = lines[i].split()
-            if before < int(lines[i][1]): 
-                lines[i] = lines[i][0] + " " + lines[i][1]
-                lines[i-1], lines[i] = lines[i], lines[i-1]
-                OK = 1
-            else:
-                before = int(lines[i][1])
-                lines[i] = lines[i][0] + " " + lines[i][1]
+        lines.sort(reverse = True, key=lambda x: int(x.split()[1]))
         f.close()
-        if OK:
-            self.updatelines(lines, movielist)
+        self.updatelines(lines, movielist)
 
     def addmovie(self, movie, movielist, addition):
         f = open(movielist, "r")
@@ -53,6 +41,7 @@ class MovieList():
             self.addnewmovie(movie, addition, movielist)
         else:
             self.updatelines(lines, movielist)
+            self.updatelist(movielist)
 
     def add(self, movie, movielist, addition):
         movie = movie.split()

@@ -8,14 +8,14 @@ from PyQt5 import QtWidgets, uic
 from PyQt5.QtGui import QIcon, QIntValidator
 from PyQt5.QtWidgets import QDesktopWidget
 
-from movielist import MovieList #probably turn it in a class importing
+from movielist import MovieList
 
-FILE_SAVE_LOCATION = "/home/eglis/Desktop/repos/MovieList"
+FILE_SAVE_LOCATION = "/home/eglis/Desktop/repos/MovieList" #probably change to getting the current directory
 
 class Ui(QtWidgets.QMainWindow):
     def __init__(self):
-        super(Ui, self).__init__()  # Call the inherited classes init method
-        uic.loadUi('lister.ui', self)  # Load the .ui file
+        super(Ui, self).__init__()
+        uic.loadUi('lister.ui', self)
         self.setWindowTitle("Eglis Listing")
         self.center()
         self.setWindowIcon(QIcon('movielist.png'))
