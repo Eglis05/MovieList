@@ -1,8 +1,12 @@
 import requests
 
+from imdb import IMDb
+
 class MovieList():
     def __init__(self):
         print("Creating a MovieList Instance")
+        # create an instance of the IMDb class
+        self.ia = IMDb()
 
     def addnewmovie(self, movie, addition, movielist):
         f = open(movielist, "a")
@@ -44,61 +48,18 @@ class MovieList():
             self.updatelist(movielist)
 
     def add(self, movie, movielist, addition):
-        movie = movie.split()
-        for i in range(len(movie)):
-            movie[i] = movie[i].lower().capitalize()
-        movie2 = " ".join(movie)
-        movie = "+".join(movie)
-        webp = requests.get("https://www.imdb.com/find?q=" + movie).text
+        movies = self.ia.search_movie(movie)
 
-        startlist = "<table class=\"findList\">"
-        lenlist = webp.find(startlist, 80000, len(webp)-1) + len(startlist)
-        if lenlist == len(startlist) - 1:
-            print("SOMETHING IS WRONG")
-            return
-        secondone = "<a href=\"/title/"
-        lensecond = len(secondone)
-
-        for i in range(lenlist,len(webp)):
-            if webp[i:(i+lensecond)] == secondone:
-                lensecond += i
+        ok = 1
+        for movie_try in movies:
+            movie_title  = movie_try['title']
+            if movie_title.lower() == movie.lower():
+                movie = movie_title
+                ok = 0
                 break
-        endsymbol = '/'
-        endnumber = lensecond
-        for i in range(lensecond,len(webp)):
-            if webp[i] == endsymbol:
-                endnumber = i + 1
-                break
-        title = webp[lensecond:endnumber]
-        webp = requests.get("https://www.imdb.com/title/" + title).text
-
-        
-        lastone = "<meta property='og:title' content=\""
-        lenlastone = len(lastone)
-
-        for i in range(len(webp)):
-            if webp[i:(i+lenlastone)] == lastone:
-                lenlastone += i
-                break
-
-        endsymbol = '('
-        endsecond = lenlastone
-        for i in range(lenlastone,len(webp)):
-            if webp[i] == endsymbol:
-                endsecond = i-1
-                break
-        
-        quotes = "&quot;"
-
-        x = webp.find(quotes, lenlastone, endsecond)
-        if (x != -1):
-            lenlastone = webp.find(quotes, x + len(quotes), endsecond) + len(quotes) + 1
-
-        movie = webp[lenlastone:endsecond]
-        if movie.lower() != movie2.lower():
-            print("Not the same: " + movie2 + " vs " + movie)
-        # else:
-        #     print("The same: " + movie)
+        if ok:
+            print("Not the same: " + movies[0]['title'] + " vs " + movie)
+            movie = movies[0]['title']
 
         movie = movie.split()
         movie = "_".join(movie)
