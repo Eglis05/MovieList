@@ -49,6 +49,10 @@ class Ui(QtWidgets.QMainWindow):
         self.scaleBtn = self.findChild(QtWidgets.QPushButton, 'btnScale')
         self.scaleBtn.clicked.connect(self.scaleBtnPress)
 
+        # scale button
+        self.netflixBtn = self.findChild(QtWidgets.QPushButton, 'btnNetflix')
+        self.netflixBtn.clicked.connect(self.netflixBtnPress)
+
         # top list button
         self.topBtn = self.findChild(QtWidgets.QPushButton, 'btnTop')
         self.topBtn.clicked.connect(self.topBtnPress)
@@ -123,6 +127,10 @@ class Ui(QtWidgets.QMainWindow):
     def addBtnPress(self):
         self.algorithms.add(self.nameadd.text(), self.outputPath.text(), int(self.points.text()))
         self.printing("Finish Adding the movie!")
+    
+    def netflixBtnPress(self):
+        self.algorithms.search_note_netflix(self.outputPath.text(), "italy")
+        self.printing("Finish Netflix Searching!")
 
     def processtest(self):
         self.algorithms.readnotes(self.inputPath.text(), self.outputPath.text())
