@@ -1,12 +1,22 @@
 import requests
+import sys
+import os
 
 from imdb import IMDb
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
 
 class MovieList():
     def __init__(self):
         print("Creating a MovieList Instance")
         # create an instance of the IMDb class
         self.ia = IMDb()
+        if os.environ.get("NETFLIX_USER") and os.environ.get("NETFLIX_PASS"):
+            sys.path.append("../netflix-selenium")
+            from netflix_selenium import NetflixLogin
+
+            self.netflix = NetflixLogin()
+            self.URL = "https://www.netflix.com/browse/my-list"
 
     def addnewmovie(self, movie, addition, movielist):
         f = open(movielist, "a")
@@ -157,60 +167,17 @@ class MovieList():
         return self.searchmovie(movie, movielist)
     
     def search_note_netflix(self, movielist, country):
+        browser = webdriver.Chrome(ChromeDriverManager().install())
+        browser.get(self.URL)
+        self.netflix.login(browser)
+        self.netflix.profileselect(browser)
+
         f = open(movielist, "r")
         lines = f.readlines()
         for line in lines:
             line = line.split()[0]
             movie = " ".join(line.split("_"))
-            if self.search_netflix(movie, country):
+            if self.netflix.check_available(browser, movie):
                 print(movie)
             else:
                 print(f"NOT IN NETFLIX: {movie}")
-
-    def search_netflix(self, movie, country):
-        movie_name = movie
-        movie = movie.split()
-        for i in range(len(movie)):
-            movie[i] = movie[i].lower()
-        movie = "+".join(movie)
-
-        #might wanna look to change header maybe but probably dont need to
-        header = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36"}
-        link = "https://whatsnewonnetflix.com/{}/search?utf8=%E2%9C%93&keywords={}&streaming_only=on"
-        webp = requests.get(link.format(country, movie), headers = header).text
-
-        startlist = "title=\"{}\"".format(movie_name)
-        found = webp.find(startlist, 180000) #now we will be immediately where we want
-        if found == -1:
-            print(f"SOMETHING WENT WRONG FOR {movie_name}")
-            print(link.format(country, movie))
-            return False
-        found += len(startlist) + 8
-
-        endsymbol = "\""
-        end_point = webp.find(endsymbol, found)
-        if end_point >= len(webp) or end_point == -1:
-            print(f"SOMETHING WENT WRONG FOR {movie_name}")
-            print(link.format(country, movie))
-            print(webp[found:])
-            return False
-        
-        title = webp[found:end_point]
-        webp = requests.get("https://whatsnewonnetflix.com/" + title, headers = header).text
-        print("https://whatsnewonnetflix.com/" + title)
-        startlist = "<strong>{}".format(movie_name)
-        found = webp.find(startlist, 140000) #now we will be immediately where we want
-        if found == -1:
-            print(f"SOMETHING WENT WRONG FOR {movie_name}")
-            print("https://whatsnewonnetflix.com/" + title)
-            return False
-        if webp[found - 5: found] == 'Yes, ':
-            return True
-        elif webp[found - 7: found] == "Sorry, ":
-            # print(webp)
-            return False
-        else:
-            print(f"SOMETHING WENT WRONG FOR {movie_name}")
-            print("Not a predicted answer!")
-            print(webp[found-30: found+30])
-            return False
