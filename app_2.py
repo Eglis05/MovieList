@@ -91,6 +91,9 @@ class Ui(QtWidgets.QMainWindow):
         #calling the function for creating the first instance
         self.inputTypeSelector(self.inputType.currentText())
 
+        #the raw checkbox
+        self.rawcheck = self.findChild(QtWidgets.QCheckBox, 'Raw')
+
         self.show()  # Show the GUI
 
     def center(self):

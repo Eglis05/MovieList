@@ -283,7 +283,7 @@
      <rect>
       <x>30</x>
       <y>280</y>
-      <width>100</width>
+      <width>51</width>
       <height>30</height>
      </rect>
     </property>
@@ -461,6 +461,19 @@
     </property>
     <property name="text">
      <string>Netflix</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="Raw">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>280</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Raw</string>
     </property>
    </widget>
   </widget>
