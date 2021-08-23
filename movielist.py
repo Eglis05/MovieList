@@ -60,16 +60,18 @@ class MovieList():
     def add(self, movie, movielist, addition):
         movies = self.ia.search_movie(movie)
 
-        ok = 1
-        for movie_try in movies:
-            movie_title  = movie_try['title']
-            if movie_title.lower() == movie.lower():
-                movie = movie_title
-                ok = 0
-                break
-        if ok:
-            print("Not the same: " + movies[0]['title'] + " vs " + movie)
-            movie = movies[0]['title']
+        # case when something was found
+        if movies:
+            ok = 1
+            for movie_try in movies:
+                movie_title  = movie_try['title']
+                if movie_title.lower() == movie.lower():
+                    movie = movie_title
+                    ok = 0
+                    break
+            if ok:
+                print("Not the same: " + movies[0]['title'] + " vs " + movie)
+                movie = movies[0]['title']
 
         movie = movie.split()
         movie = "_".join(movie)
